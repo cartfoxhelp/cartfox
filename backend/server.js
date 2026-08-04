@@ -13,7 +13,7 @@ if (!process.env.JWT_SECRET) {
 const cors = require("cors");
 const path = require("path");
 
-const { initializeDatabase } = require("./database");
+const { initializeDatabase, pool } = require("./database");
 
 const productRoutes = require("./routes/products");
 const ordersRoutes = require("./routes/orders");
@@ -169,7 +169,24 @@ const PORT = process.env.PORT || 5000;
 
 
 initializeDatabase()
-.then(() => {
+.then(async () => {
+
+    try {
+
+        const result = await pool.query(
+            "SELECT id, email, role FROM users ORDER BY id"
+        );
+
+        console.log("=====================================");
+        console.log("👤 USERS TABLE");
+        console.table(result.rows);
+        console.log("=====================================");
+
+    } catch (err) {
+
+        console.error("Users table debug failed:", err);
+
+    }
 
     app.listen(PORT, () => {
 
@@ -181,7 +198,7 @@ initializeDatabase()
     });
 
 })
-.catch((error)=>{
+.catch((error) => {
 
     console.error("Database initialization failed:", error);
 
