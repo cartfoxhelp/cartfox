@@ -17,68 +17,114 @@ async function getUserDetails() {
 
     try {
         const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 
+                'Authorization': `Bearer ${token}` 
+            }
         });
+
         if (response.ok) {
             const data = await response.json();
             return data.user;
         }
+
     } catch (error) {
         console.error("Failed to fetch user details:", error);
     }
+
     return null;
 }
 
 function logout() {
     localStorage.removeItem('cartfox_admin_token');
     sessionStorage.removeItem('cartfox_admin_token');
-    window.location.href = 'login.html';
+
+    window.location.href = '/admin/login';
 }
 
 function checkAuth() {
+
     const token = getToken();
     const path = window.location.pathname;
 
-    // List of pages accessible without a login token
-    const publicPaths = ['/login.html', '/forgot-password.html', '/verify-2fa.html'];
-    const isPublicPage = publicPaths.some(publicPath => path.endsWith(publicPath));
+    // Pages accessible without login
+    const publicPaths = [
+        '/admin/login',
+        '/admin/login.html',
+        '/admin/forgot-password',
+        '/admin/forgot-password.html',
+        '/admin/verify-2fa',
+        '/admin/verify-2fa.html'
+    ];
+
+    const isPublicPage = publicPaths.some(publicPath =>
+        path.endsWith(publicPath)
+    );
+
 
     if (token) {
-        // User is logged in. If they try to access the login page, redirect to the dashboard.
-        if (path.endsWith('/login.html')) {
-            window.location.href = 'dashboard.html';
+
+        // Already logged in - don't show login page
+        if (
+            path.endsWith('/admin/login') ||
+            path.endsWith('/admin/login.html')
+        ) {
+            window.location.href = '/admin/dashboard';
             return;
         }
-        
-        // On the dashboard page, initialize its content.
-        if (path.endsWith('/dashboard.html') && typeof initDashboardPage === 'function') {
+
+
+        // Dashboard initialization
+        if (
+            (
+                path.endsWith('/admin/dashboard') ||
+                path.endsWith('/admin/dashboard.html')
+            )
+            &&
+            typeof initDashboardPage === 'function'
+        ) {
+
             console.log("Authentication successful. Loading dashboard data...");
+
             initDashboardPage();
-            if (typeof check2faStatus === 'function') check2faStatus();
+
+            if (typeof check2faStatus === 'function') {
+                check2faStatus();
+            }
         }
 
+
     } else {
-        // User is not logged in. If they are on a protected page, redirect to login.
+
+        // No token and trying protected page
         if (!isPublicPage) {
-            window.location.href = 'login.html';
+            window.location.href = '/admin/login';
         }
+
     }
 }
 
-// Attach logout function to the logout button if it exists
+
+// Logout buttons
 document.addEventListener('DOMContentLoaded', () => {
-    // Select all logout buttons on the page (header and sidebar)
+
     const logoutBtns = document.querySelectorAll('.logout-btn');
+
     logoutBtns.forEach(btn => {
+
         btn.addEventListener('click', (e) => {
+
             e.preventDefault();
-            // Add confirmation dialog before logging out
+
             if (confirm('क्या आप वाकई लॉगआउट करना चाहते हैं?')) {
                 logout();
             }
+
         });
+
     });
-    
-    // Run auth check on every page that includes this script
+
+
+    // Run authentication check
     checkAuth();
+
 });
