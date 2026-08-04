@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const bcrypt = require("bcryptjs");
 require("dotenv").config();
 
 const pool = new Pool({
@@ -126,14 +127,31 @@ async function initializeDatabase() {
         `);
         console.log("✅ Audit Logs Table Ready");
 
-        // Seed the admin user if it doesn't exist. Password is 'admin123'
-        await pool.query(`
-            INSERT INTO users (email, password_hash, role)
-            VALUES ('admin@cartfox.com', '$2a$10$f.w2/Wz3g.xQq8x.flx4duxG0s3j.d2i.wz9pZg4.e.Cq.r.Q.K9W', 'admin')
-            ON CONFLICT (email) DO NOTHING;
-        `);
-        console.log("✅ Admin user checked/seeded.");
+       // ======================================
+// CREATE / UPDATE DEFAULT ADMIN
+// Email: admin@cartfox.com
+// Password: admin123
+// ======================================
 
+const adminPasswordHash = await bcrypt.hash("admin123", 10);
+
+await pool.query(
+    `
+    INSERT INTO users (email, password_hash, role)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (email)
+    DO UPDATE SET
+        password_hash = EXCLUDED.password_hash,
+        role = EXCLUDED.role;
+    `,
+    [
+        "admin@cartfox.com",
+        adminPasswordHash,
+        "admin"
+    ]
+);
+
+console.log("✅ Default admin account ready.");
 
         console.log("=====================================");
         console.log("✅ PostgreSQL Connected");
