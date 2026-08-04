@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CartFox | Premium Shopping, Curated Products & Fast Delivery</title>
+  <meta name="description" content="Shop premium products, curated deals, and trusted Amazon picks at CartFox with safe checkout and fast delivery.">
+  <meta name="keywords" content="CartFox, online shopping, premium products, Amazon deals, ecommerce, fast delivery">
+  <meta name="author" content="CartFox">
+  <link rel="canonical" href="https://cartfoxhelp.github.io/cartfox/">
+  <meta property="og:title" content="CartFox | Premium Shopping, Curated Products & Fast Delivery">
+  <meta property="og:description" content="Discover premium products and curated deals at CartFox with secure checkout and fast delivery.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cartfoxhelp.github.io/cartfox/">
+  <meta property="og:image" content="https://cartfoxhelp.github.io/cartfox/og-image.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CartFox | Premium Shopping, Curated Products & Fast Delivery">
+  <meta name="twitter:description" content="Discover premium products and curated deals at CartFox with secure checkout and fast delivery.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "CartFox",
+    "url": "https://cartfoxhelp.github.io/cartfox/",
+    "description": "Premium shopping, curated products, and fast delivery."
+  }
+  </script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  
+  <!-- PWA MANIFEST AUR THEME COLOR YAHAN ADD KIYA HAI -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff6b00">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <style>
+    /* Chhoti inline styles buttons ko premium dikhane ke liye */
+    .btn-buy-amazon {
+      background-color: #FF9900;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+    .btn-buy-amazon:hover { background-color: #e68a00; }
+    
+    .btn-add-cart {
+      background-color: var(--primary-color, #3498DB);
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      width: 100%;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn-add-cart:hover { background-color: #2980b9; }
+  </style>
+</head>
+<body>
+  <div id="userMenu">
+    <a href="login.html">Login</a> | <a href="signup.html">Sign Up</a>
+  </div>
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">🦊 CartFox</a>
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="product.html">Products</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="cart-icon" onclick="goToCart()" style="cursor:pointer;">
+        🛒
+        <span class="cart-count" id="cartCount">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="container">
+      <h1>Welcome to CartFox</h1>
+      <p>Discover amazing products at unbeatable prices</p>
+      <a href="product.html" class="btn">Start Shopping</a>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="section">
+    <div class="container">
+      <h2 style="font-size: 28px; margin-bottom: 30px; color: var(--dark-color);">Featured Products</h2>
+      
+      <div class="products-grid" id="featuredProducts">
+        <div style="grid-column: 1/-1; text-align: center; padding: 20px;">
+          <h3>Loading latest products...</h3>
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="product.html" class="btn btn-secondary">View All Products</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="section" style="background-color: #F0F8FF;">
+    <div class="container">
+      <h2 style="font-size: 28px; margin-bottom: 30px; color: var(--dark-color); text-align: center;">Why Choose CartFox?</h2>
+      <div class="products-grid">
+        <div class="product-card">
+          <div class="product-image" style="background-color: var(--secondary-color); color: white; font-size: 50px; display:flex; justify-content:center; align-items:center;">🚚</div>
+          <div class="product-info">
+            <div class="product-name">Fast Delivery</div>
+            <div class="product-description">Same-day and next-day delivery available in major cities</div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-image" style="background-color: var(--primary-color); color: white; font-size: 50px; display:flex; justify-content:center; align-items:center;">🛡️</div>
+          <div class="product-info">
+            <div class="product-name">Secure Payment</div>
+            <div class="product-description">100% secure transactions with encrypted payments</div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-image" style="background-color: #7B68EE; color: white; font-size: 50px; display:flex; justify-content:center; align-items:center;">↩️</div>
+          <div class="product-info">
+            <div class="product-name">Easy Returns</div>
+            <div class="product-description">30-day return policy for complete peace of mind</div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-image" style="background-color: #20B2AA; color: white; font-size: 50px; display:flex; justify-content:center; align-items:center;">💬</div>
+          <div class="product-info">
+            <div class="product-name">24/7 Support</div>
+            <div class="product-description">Round-the-clock customer support for all queries</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER SECTION -->
+  <section class="section" style="background: linear-gradient(135deg, var(--primary-color, #3498DB) 0%, var(--secondary-color, #2ecc71) 100%); color: white;">
+    <div class="container" style="max-width: 600px;">
+      <h2 style="text-align: center; margin-bottom: 20px; font-size: 24px;">Subscribe to Our Newsletter</h2>
+      <p style="text-align: center; margin-bottom: 20px;">Get exclusive deals and updates delivered to your inbox</p>
+      <div style="display: flex; gap: 10px; flex-direction: column;">
+        <input type="email" placeholder="Enter your email" style="padding: 12px; border: none; border-radius: 5px; font-size: 14px; outline:none;">
+        <button class="btn btn-outline" style="background:white; color:var(--primary-color, #3498DB); font-weight:bold; border:none; padding:12px; border-radius:5px; cursor:pointer;">Subscribe Now</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; padding: 40px 20px; background: #1a1a1a; color: #fff;">
+      
+      <!-- Section 1: About Brand -->
+      <div class="footer-section">
+        <h3 style="color: #fff; margin-bottom: 15px; font-size: 18px;">🦊 CartFox</h3>
+        <p style="color: #bbb; font-size: 14px; line-height: 1.6;">Your trusted online shopping destination for premium own-brand products and curated Amazon finds at the best prices.</p>
+      </div>
+
+      <!-- Section 2: Quick Links -->
+      <div class="footer-section">
+        <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Quick Links</h3>
+        <ul style="list-style: none; padding: 0;">
+          <li style="margin-bottom: 8px;"><a href="index.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Home</a></li>
+          <li style="margin-bottom: 8px;"><a href="product.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Products Catalog</a></li>
+          <li style="margin-bottom: 8px;"><a href="cart.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Shopping Cart</a></li>
+          <li style="margin-bottom: 8px;"><a href="checkout.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Checkout</a></li>
+        </ul>
+      </div>
+
+      <!-- Section 3: Customer Service -->
+      <div class="footer-section">
+        <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Customer Service</h3>
+        <ul style="list-style: none; padding: 0;">
+          <li style="margin-bottom: 8px;"><a href="#contact" style="color: #bbb; text-decoration: none; font-size: 14px;">Contact Us</a></li>
+          <li style="margin-bottom: 8px;"><a href="#shipping" style="color: #bbb; text-decoration: none; font-size: 14px;">Shipping & Delivery</a></li>
+          <li style="margin-bottom: 8px;"><a href="#faq" style="color: #bbb; text-decoration: none; font-size: 14px;">FAQ</a></li>
+        </ul>
+      </div>
+
+      <!-- Section 4: Legal & Compliance (Google Standard) -->
+      <div class="footer-section">
+        <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Legal & Policies</h3>
+        <ul style="list-style: none; padding: 0;">
+          <li style="margin-bottom: 8px;"><a href="privacy.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Privacy Policy</a></li>
+          <li style="margin-bottom: 8px;"><a href="terms.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Terms & Conditions</a></li>
+          <li style="margin-bottom: 8px;"><a href="refund.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Refund & Returns</a></li>
+          <li style="margin-bottom: 8px;"><a href="disclaimer.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Affiliate Disclaimer</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Footer Bottom Copyright -->
+    <div class="footer-bottom" style="background: #111; color: #888; text-align: center; padding: 15px 20px; font-size: 13px; border-top: 1px solid #333;">
+      <p>&copy; 2026 CartFox. All rights reserved. Designed with security & fast delivery.</p>
+    </div>
+  </footer>

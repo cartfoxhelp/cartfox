@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CartFox API Test</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+padding:40px;
+background:#f5f5f5;
+}
+
+input{
+display:block;
+width:350px;
+padding:10px;
+margin:10px 0;
+}
+
+button{
+padding:12px 20px;
+background:#ff9900;
+color:white;
+border:none;
+cursor:pointer;
+font-size:16px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>CartFox API Test</h2>
+
+<input id="name" placeholder="Product Name">
+<input id="price" placeholder="Price">
+<input id="category" placeholder="Category">
+<input id="brand" placeholder="Brand">
+<input id="rating" placeholder="Rating">
+<input id="badge" placeholder="Badge">
+<input id="delivery" placeholder="Delivery">
+<input id="image" placeholder="Image URL">
+<input id="affiliate" placeholder="Affiliate Link">
+
+<button onclick="saveProduct()">
+Save Product
+</button>
+
+<script>
+
+async function saveProduct(){
+
+const product={
+
+name:document.getElementById("name").value,
+price:document.getElementById("price").value,
+category:document.getElementById("category").value,
+brand:document.getElementById("brand").value,
+rating:document.getElementById("rating").value,
+badge:document.getElementById("badge").value,
+delivery:document.getElementById("delivery").value,
+image:document.getElementById("image").value,
+affiliate:document.getElementById("affiliate").value
+
+};
+
+const response=await fetch("https://cartfox-backend.onrender.com/api/products",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(product)
+
+});
+
+const data=await response.json();
+
+alert(JSON.stringify(data));
+
+}
+
+</script>
+
+</body>
+</html>

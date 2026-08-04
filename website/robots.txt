@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cartfoxhelp.github.io/cartfox/sitemap.xml

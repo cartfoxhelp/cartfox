@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CartFox Admin Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Mobile App Theme -->
+    <meta name="theme-color" content="#111827">
+
+    <!-- Mobile App Support -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- Auth script must be loaded before any other script that might need auth -->
+    <script src="auth.js" defer></script>
+</head>
+<body>
+<div class="admin-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="adminSidebar">
+        <div class="sidebar-logo">🦊 CartFox Admin</div>
+        <nav>
+            <!-- Admin Info (visible when logged in) -->
+            <div class="admin-info">
+                <p class="admin-name">Hi, Admin! 👋</p>
+                <p class="admin-email" id="adminUserEmail">Loading...</p>
+                <button class="logout-btn" id="logoutSidebarBtn" style="width: 100%; margin-top: 10px;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+            <hr class="sidebar-divider">
+
+            <ul class="sidebar-menu">
+                <li><a href="#dashboard" class="nav-link active">📊 Dashboard</a></li>
+                <li><a href="#products" class="nav-link">📦 Products</a></li>
+                <li><a href="#orders" class="nav-link">🛒 Orders</a></li>
+                <li><a href="#customers" class="nav-link">👥 Customers</a></li>
+                <li><a href="#analytics" class="nav-link">📈 Analytics</a></li>
+                <li><a href="#settings" class="nav-link">⚙️ Settings</a></li>
+                <li><a href="#audit-log" class="nav-link">🛡️ Audit Log</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+        <div class="admin-header">
+            <button class="hamburger-btn" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1 id="pageTitle">📊 Dashboard</h1>
+            <button class="logout-btn" id="logoutHeaderBtn">Logout</button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 📊 1. DASHBOARD SECTION (Default Visible)  -->
+        <!-- ========================================== -->
+        <section id="dashboard" class="content-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="statTotalProducts">0</h3>
+                    <p>Total Products</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="statOrdersToday">0</h3>
+                    <p>Orders Today</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="statMonthlyRevenue">₹0</h3>
+                    <p>Monthly Revenue</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="statUptime">99.99%</h3>
+                    <p>System Uptime</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 📦 2. PRODUCTS SECTION                     -->
+        <!-- ========================================== -->
+        <section id="products" class="content-section hidden-section">
+            <!-- Add / Update Product Form -->
+            <div class="form-section card">
+                <h2 class="card-title">➕ Add / Update Product</h2>
+                <form id="productForm">
+                    <input type="hidden" id="productId">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="productType">Product Type</label>
+                            <select id="productType" name="producttype" required title="Select product type">
+                                <option value="own">Own Brand Product</option>
+                                <option value="amazon">Amazon Affiliate</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Product Name</label>
+                            <input type="text" id="name" placeholder="e.g. Smart Watch" required title="Enter product name">
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price (₹)</label>
+                            <input type="number" id="price" placeholder="0" required title="Enter product price in rupees">
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" name="category" required title="Select Category">
+                                <option value="Electronics">Electronics</option>
+                                <option value="Fashion">Fashion</option>
+                                <option value="Home">Home & Kitchen</option>
+                                <option value="Gadgets">Gadgets</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rating">Rating (1 to 5)</label>
+                            <input type="number" step="0.1" max="5" min="1" id="rating" placeholder="e.g. 4.5" title="Enter product rating">
+                        </div>
+                        <div class="form-group" id="stockGroup">
+                            <label for="stock">Stock</label>
+                            <input type="number" id="stock" placeholder="e.g. 150" title="Enter product stock quantity">
+                        </div>
+                        <div class="form-group hidden" id="affiliateLinkGroup" hidden>
+                            <label for="affiliateLink">Amazon Buy Link</label>
+                            <input type="url" id="affiliateLink" name="affiliatelink" placeholder="https://amzn.to/..." title="Enter Amazon affiliate link">
+                        </div>
+
+                        <!-- Multiple Image Upload Section -->
+                        <div class="form-group full-width">
+                            <label for="images">Upload Images (Select up to 3)</label>
+                            <input type="file" id="images" name="images" accept="image/*" multiple title="Upload product images">
+                            <div id="imagePreviewContainer" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="description">Product Description</label>
+                            <textarea id="description" placeholder="Write description..." title="Enter product description"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions" style="margin-top: 20px;">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Save Product <span class="spinner hidden" id="productFormSpinner"></span></button>
+                        <button type="button" class="btn btn-cancel" id="cancelEditBtn" style="display:none;">Cancel Edit</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Inventory List Table -->
+            <div class="card table-container">
+                <h2 class="card-title">📦 Inventory List</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Details</th>
+                                <th>Type</th>
+                                <th>Price & Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody">
+                            <!-- Products will load here via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 🛒 3. ORDERS SECTION                       -->
+        <!-- ========================================== -->
+        <section id="orders" class="content-section hidden-section">
+            <div class="card table-container">
+                <h2 class="card-title" style="margin-bottom: 20px;">🛒 Recent Orders</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Orders will load dynamically via dashboard.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 👥 4. CUSTOMERS SECTION                    -->
+        <!-- ========================================== -->
+        <section id="customers" class="content-section hidden-section">
+            <div class="card table-container">
+                <h2 class="card-title">👥 Customer Database</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Total Orders</th>
+                                <th>Joined Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 20px; color: #777;">
+                                    Customer data backend API se fetch kiya jayega...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+<!-- 📈 5. ANALYTICS SECTION                    -->
+<!-- ========================================== -->
+<section id="analytics" class="content-section hidden-section">
+    <div class="card" style="margin-bottom: 20px;">
+        <h2 class="card-title">📈 Sales Analytics & Performance</h2>
+        
+        <!-- Analytics Summary Cards -->
+        <div class="stats-grid" style="margin-top: 20px;">
+            <div class="stat-card" style="background: #e8f4f8; border-left: 4px solid #2980b9;">
+                <h3 id="analyticsTotalRevenue" style="color: #2980b9;">₹0</h3>
+                <p>Total Revenue Generated</p>
+            </div>
+            <div class="stat-card" style="background: #eafaf1; border-left: 4px solid #27ae60;">
+                <h3 id="analyticsTotalOrders" style="color: #27ae60;">0</h3>
+                <p>Total Successful Orders</p>
+            </div>
+            <div class="stat-card" style="background: #fef9e7; border-left: 4px solid #f39c12;">
+                <h3 id="analyticsAvgOrderValue" style="color: #d68910;">₹0</h3>
+                <p>Average Order Value</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Sales Breakdown Table -->
+    <div class="card table-container">
+        <h2 class="card-title">📊 Recent Sales Summary</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer Name</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="analyticsTableBody">
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 20px; color: #777;">
+                            Loading analytics data...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+        <!-- ========================================== -->
+        <!-- ⚙️ 6. SETTINGS SECTION                     -->
+        <!-- ========================================== -->
+        <section id="settings" class="content-section hidden-section">
+            <div class="card form-section">
+                <h2 class="card-title">⚙️ Store Settings</h2>
+                <form id="settingsForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="storeName">Store Name</label>
+                            <input type="text" id="storeName" value="CartFox" disabled style="background: #eee;" title="Store Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminEmail">Admin Email</label>
+                            <input type="email" id="adminEmail" value="admin@cartfox.com" required title="Enter Admin Email">
+                        </div>
+                        <div class="form-group">
+                            <label for="currencySymbol">Currency Symbol</label>
+                            <input type="text" id="currencySymbol" value="₹" required title="Enter Currency Symbol">
+                        </div>
+                        <div class="form-group">
+                            <label for="supportPhone">Support Phone</label>
+                            <input type="text" id="supportPhone" placeholder="+91 0000000000" title="Enter Support Phone Number">
+                        </div>
+                    </div>
+                    <div class="form-actions" style="margin-top: 20px;">
+                        <button type="button" class="btn btn-primary" onclick="alert('Settings Saved Successfully!')">Save Settings</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 2FA Management Section -->
+            <div class="card form-section" style="margin-top: 30px;">
+                <h2 class="card-title">🔒 Two-Factor Authentication (2FA)</h2>
+                
+                <!-- Status Display -->
+                <div id="2fa-status-section">
+                    <p>Status: <strong id="2fa-status-text" style="color: #777;">Checking...</strong></p>
+                    <div class="form-actions" style="margin-top: 10px;">
+                        <button id="toggle-2fa-btn" class="btn btn-secondary" disabled>Enable 2FA</button>
+                    </div>
+                </div>
+
+                <!-- Setup UI (hidden by default) -->
+                <div id="2fa-setup-section" class="hidden">
+                    <p>Scan the QR code with your authenticator app (like Google Authenticator), then enter the 6-digit code to verify.</p>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <img id="2fa-qr-code" src="" alt="QR Code" style="max-width: 200px; border: 5px solid white; box-shadow: var(--shadow);">
+                    </div>
+                    <div class="form-group">
+                        <label for="2fa-verify-code">Verification Code</label>
+                        <input type="text" id="2fa-verify-code" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric">
+                    </div>
+                    <div class="form-actions">
+                        <button id="enable-2fa-verify-btn" class="btn btn-primary">Verify & Enable</button>
+                        <button id="cancel-2fa-setup-btn" class="btn btn-cancel">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Disable UI (hidden by default) -->
+                <div id="2fa-disable-section" class="hidden">
+                    <p>To disable 2FA, please enter a code from your authenticator app to confirm your identity.</p>
+                    <div class="form-group"><label for="2fa-disable-code">Current 2FA Code</label><input type="text" id="2fa-disable-code" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric"></div>
+                    <div class="form-actions"><button id="disable-2fa-confirm-btn" class="btn btn-danger">Confirm & Disable</button><button id="cancel-2fa-disable-btn" class="btn btn-cancel">Cancel</button></div>
+                </div>
+            </div>
+
+            <!-- Recovery Codes Modal (hidden by default) -->
+            <div id="recovery-codes-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 2000;">
+                <div class="card" style="width: 90%; max-width: 500px; text-align: center;">
+                    <h2 class="card-title">🔑 Save Your Recovery Codes</h2>
+                    <p style="margin-bottom: 20px;">Store these codes in a safe place. They can be used to access your account if you lose your device.</p>
+                    <div id="recovery-codes-list" style="background: #f4f4f4; border-radius: 5px; padding: 15px; font-family: 'Courier New', monospace; letter-spacing: 1px; margin-bottom: 20px;">
+                        <!-- Codes will be injected here -->
+                    </div>
+                    <div class="form-actions" style="justify-content: center;">
+                        <button id="copy-recovery-codes-btn" class="btn btn-secondary">Copy Codes</button>
+                        <button id="close-recovery-modal-btn" class="btn btn-primary">I have saved these codes</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 🛡️ 7. AUDIT LOG SECTION                    -->
+        <!-- ========================================== -->
+        <section id="audit-log" class="content-section hidden-section">
+            <div class="card table-container">
+                <h2 class="card-title">🛡️ Security Audit Log</h2>
+                <p style="color: #777; margin-bottom: 20px;">Recent security-related events are logged here.</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditLogTableBody">
+                            <!-- Logs will be loaded here via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script src="dashboard.js" defer></script>
+</body>
+</html>

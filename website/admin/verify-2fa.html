@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2FA Verification - CartFox Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1 class="login-title">🔒 2FA Verification</h1>
+            <p class="login-subtitle">Enter the code from your authenticator app.</p>
+            <form id="verify2faForm">
+                <div class="form-group">
+                    <label for="twoFactorCode">6-Digit Code</label>
+                    <input type="text" id="twoFactorCode" name="twoFactorCode" required autocomplete="one-time-code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <div id="error" class="error-message hidden"></div>
+                <button type="submit" class="btn btn-primary btn-full" id="verifyBtn">
+                    Verify
+                    <span class="spinner hidden" id="verifySpinner"></span>
+                </button>
+            </form>
+            <div class="login-footer">
+                <a href="#" id="useRecoveryCodeLink">Use a recovery code</a>
+            </div>
+        </div>
+        
+        <!-- Recovery Code Form (hidden by default) -->
+        <div class="login-box hidden" id="recoveryFormBox">
+            <h1 class="login-title">🔑 Use Recovery Code</h1>
+            <p class="login-subtitle">Enter one of your recovery codes.</p>
+            <form id="recoveryForm">
+                <div class="form-group">
+                    <label for="recoveryCode">Recovery Code</label>
+                    <input type="text" id="recoveryCode" name="recoveryCode" required placeholder="xxxx-xxxx">
+                </div>
+                <div id="recoveryError" class="error-message hidden"></div>
+                <button type="submit" class="btn btn-primary btn-full" id="recoveryBtn">
+                    Login with Recovery Code
+                    <span class="spinner hidden" id="recoverySpinner"></span>
+                </button>
+            </form>
+             <div class="login-footer">
+                <a href="#" id="use2faCodeLink">Use an authenticator code</a>
+            </div>
+        </div>
+    </div>
+    <script src="auth.js" defer></script>
+    <script src="verify-2fa.js" defer></script>
+</body>
+</html>

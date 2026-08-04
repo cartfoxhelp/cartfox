@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart - CartFox</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="icon-192.png" type="image/png">
+</head>
+<body>
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">🦊 CartFox</a>
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="product.html">Products</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="cart-icon" onclick="goToCart()" style="cursor: pointer;">
+        🛒
+        <span class="cart-count" id="cartCount">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <section class="hero" style="padding: 30px 20px;">
+    <div class="container">
+      <h1>Shopping Cart</h1>
+      <p>Review and proceed to checkout</p>
+    </div>
+  </section>
+
+  <!-- CART SECTION -->
+  <section class="section">
+    <div class="container">
+      <!-- EMPTY CART MESSAGE -->
+      <div id="emptyCartMessage" class="alert alert-info" style="text-align: center; display: none;">
+        <p style="margin: 0;">Your cart is empty. <a href="product.html" style="color: var(--primary-color); font-weight: bold; text-decoration: underline;">Continue Shopping</a></p>
+      </div>
+
+      <!-- CART ITEMS -->
+      <div id="cartContent" style="display: none;">
+        <div class="cart-container">
+          <!-- CART ITEMS LIST -->
+          <div class="cart-items">
+            <h2 style="margin-bottom: 20px; color: var(--dark-color);">Cart Items</h2>
+            <div id="cartItemsList"></div>
+          </div>
+
+          <!-- ORDER SUMMARY (No Extra Charges) -->
+          <div class="cart-summary">
+            <h2 style="margin-bottom: 20px; color: var(--dark-color);">Order Summary</h2>
+            
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span>₹<span id="subtotal">0</span></span>
+            </div>
+
+            <div class="summary-row total">
+              <span>Total Amount</span>
+              <span>₹<span id="total">0</span></span>
+            </div>
+
+            <button class="btn" onclick="proceedToCheckout()" style="width: 100%; margin-top: 20px; padding: 15px;">Proceed to Checkout</button>
+            
+            <a href="product.html" class="btn btn-secondary" style="width: 100%; margin-top: 10px; padding: 15px; text-align: center; text-decoration: none; display: block;">Continue Shopping</a>
+
+            <div style="margin-top: 20px; padding: 15px; background-color: var(--light-color); border-radius: 5px;">
+              <h4 style="margin-bottom: 10px;">Promo Code</h4>
+              <div style="display: flex; gap: 10px;">
+                <input type="text" id="promoCode" placeholder="Enter code" style="flex: 1; padding: 8px;">
+                <button class="btn" onclick="applyPromo()">Apply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+<footer>
+  <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; padding: 40px 20px; background: #1a1a1a; color: #fff;">
+    
+    <!-- Section 1: About Brand -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 18px;">🦊 CartFox</h3>
+      <p style="color: #bbb; font-size: 14px; line-height: 1.6;">Your trusted online shopping destination for premium own-brand products and curated Amazon finds at the best prices.</p>
+    </div>
+
+    <!-- Section 2: Quick Links -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Quick Links</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 8px;"><a href="index.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Home</a></li>
+        <li style="margin-bottom: 8px;"><a href="product.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Products Catalog</a></li>
+        <li style="margin-bottom: 8px;"><a href="cart.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Shopping Cart</a></li>
+        <li style="margin-bottom: 8px;"><a href="checkout.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Checkout</a></li>
+      </ul>
+    </div>
+
+    <!-- Section 3: Customer Service -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Customer Service</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 8px;"><a href="#contact" style="color: #bbb; text-decoration: none; font-size: 14px;">Contact Us</a></li>
+        <li style="margin-bottom: 8px;"><a href="#shipping" style="color: #bbb; text-decoration: none; font-size: 14px;">Shipping & Delivery</a></li>
+        <li style="margin-bottom: 8px;"><a href="#faq" style="color: #bbb; text-decoration: none; font-size: 14px;">FAQ</a></li>
+      </ul>
+    </div>
+
+    <!-- Section 4: Legal & Compliance (Google Standard) -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Legal & Policies</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 8px;"><a href="privacy.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Privacy Policy</a></li>
+        <li style="margin-bottom: 8px;"><a href="terms.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Terms & Conditions</a></li>
+        <li style="margin-bottom: 8px;"><a href="refund.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Refund & Returns</a></li>
+        <li style="margin-bottom: 8px;"><a href="disclaimer.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Affiliate Disclaimer</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Footer Bottom Copyright -->
+  <div class="footer-bottom" style="background: #111; color: #888; text-align: center; padding: 15px 20px; font-size: 13px; border-top: 1px solid #333;">
+    <p>&copy; 2026 CartFox. All rights reserved. Designed with security & fast delivery.</p>
+  </div>
+</footer>
+
+  <!-- Link to external cart.js file as per your folder structure -->
+  <script src="cart.js"></script>
+</body>
+</html>

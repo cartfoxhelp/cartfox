@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products - CartFox | Shop Premium Products Online</title>
+  <meta name="description" content="Browse premium products, electronics, fashion, home essentials, and curated Amazon picks at CartFox.">
+  <meta name="keywords" content="products, online shopping, electronics, fashion, home, CartFox">
+  <link rel="canonical" href="https://cartfoxhelp.github.io/cartfox/product.html">
+  <meta property="og:title" content="Products - CartFox | Shop Premium Products Online">
+  <meta property="og:description" content="Browse premium products, electronics, fashion, home essentials, and curated Amazon picks at CartFox.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cartfoxhelp.github.io/cartfox/product.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "CartFox Products",
+    "url": "https://cartfoxhelp.github.io/cartfox/product.html"
+  }
+  </script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <style>
+    .btn-buy-amazon {
+      background-color: #FF9900;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+    .btn-buy-amazon:hover { background-color: #e68a00; }
+  </style>
+</head>
+<body>
+  <div id="userMenu">
+    <a href="login.html">Login</a> | <a href="signup.html">Sign Up</a>
+</div>
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">🦊 CartFox</a>
+      <div class="search-box" style="margin: 0 20px; flex-grow: 1; max-width: 400px; display: none;" id="navSearchBox">
+        <input type="text" id="searchInput" placeholder="Search for products..." onkeyup="searchProducts(event)" style="width: 100%; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc; outline: none;">
+      </div>
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="product.html">Products</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="cart-icon" onclick="goToCart()" style="cursor: pointer;">
+        🛒
+        <span class="cart-count" id="cartCount">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <section class="hero" style="padding: 30px 20px;">
+    <div class="container">
+      <h1 id="pageTitle">Our Products</h1>
+      <p id="pageSubtitle">Browse our complete collection of premium products</p>
+    </div>
+  </section>
+
+  <!-- MAIN SECTION -->
+  <section class="section">
+    <div class="container">
+      
+      <!-- SINGLE PRODUCT VIEW (Hidden by default) -->
+      <div id="singleProductView" style="display: none;">
+        <h2 class="loading-text" style="text-align: center;">Loading product details...</h2>
+      </div>
+
+      <!-- PRODUCTS LISTING VIEW (Visible by default) -->
+      <div id="productsListingView">
+        <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 30px;">
+          <!-- Filters -->
+          <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+            <h3 style="margin-bottom: 15px;">Filters</h3>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+              <div class="form-group" style="flex: 1; min-width: 200px;">
+                <label for="categoryFilter">Category</label>
+                <select id="categoryFilter" onchange="filterProducts()" title="Filter by Category">
+                  <option value="">All Categories</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Fashion">Fashion</option>
+                  <option value="Home">Home & Kitchen</option>
+                  <option value="Gadgets">Gadgets</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="flex: 1; min-width: 200px;">
+                <label for="priceFilter">Price Range</label>
+                <select id="priceFilter" onchange="filterProducts()" title="Filter by Price Range">
+                  <option value="">All Prices</option>
+                  <option value="0-1000">₹0 - ₹1,000</option>
+                  <option value="1000-5000">₹1,000 - ₹5,000</option>
+                  <option value="5000-20000">₹5,000 - ₹20,000</option>
+                  <option value="20000+">₹20,000+</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="flex: 1; min-width: 200px;">
+                <label for="sortFilter">Sort By</label>
+                <select id="sortFilter" onchange="filterProducts()" title="Sort Products">
+                  <option value="newest">Newest</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn" onclick="resetFilters()" style="margin-top: 15px;">Reset Filters</button>
+          </div>
+        </div>
+
+        <!-- PRODUCTS GRID -->
+        <div class="products-grid" id="productsGrid">
+          <!-- Products will be dynamically inserted here -->
+        </div>
+
+        <!-- PAGINATION -->
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 40px;" id="paginationControls">
+          <button class="btn" onclick="previousPage()">← Previous</button>
+          <div style="display: flex; gap: 5px; align-items: center;">
+            <span id="pageInfo">Page 1 of 1</span>
+          </div>
+          <button class="btn" onclick="nextPage()">Next →</button>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+ <!-- FOOTER -->
+<footer>
+  <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; padding: 40px 20px; background: #1a1a1a; color: #fff;">
+    
+    <!-- Section 1: About Brand -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 18px;">🦊 CartFox</h3>
+      <p style="color: #bbb; font-size: 14px; line-height: 1.6;">Your trusted online shopping destination for premium own-brand products and curated Amazon finds at the best prices.</p>
+    </div>
+
+    <!-- Section 2: Quick Links -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Quick Links</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 8px;"><a href="index.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Home</a></li>
+        <li style="margin-bottom: 8px;"><a href="product.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Products Catalog</a></li>
+        <li style="margin-bottom: 8px;"><a href="cart.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Shopping Cart</a></li>
+        <li style="margin-bottom: 8px;"><a href="checkout.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Checkout</a></li>
+      </ul>
+    </div>
+
+    <!-- Section 3: Customer Service -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Customer Service</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 8px;"><a href="#contact" style="color: #bbb; text-decoration: none; font-size: 14px;">Contact Us</a></li>
+        <li style="margin-bottom: 8px;"><a href="#shipping" style="color: #bbb; text-decoration: none; font-size: 14px;">Shipping & Delivery</a></li>
+        <li style="margin-bottom: 8px;"><a href="#faq" style="color: #bbb; text-decoration: none; font-size: 14px;">FAQ</a></li>
+      </ul>
+    </div>
+
+    <!-- Section 4: Legal & Compliance (Google Standard) -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Legal & Policies</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 8px;"><a href="privacy.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Privacy Policy</a></li>
+        <li style="margin-bottom: 8px;"><a href="terms.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Terms & Conditions</a></li>
+        <li style="margin-bottom: 8px;"><a href="refund.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Refund & Returns</a></li>
+        <li style="margin-bottom: 8px;"><a href="disclaimer.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Affiliate Disclaimer</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Footer Bottom Copyright -->
+  <div class="footer-bottom" style="background: #111; color: #888; text-align: center; padding: 15px 20px; font-size: 13px; border-top: 1px solid #333;">
+    <p>&copy; 2026 CartFox. All rights reserved. Designed with security & fast delivery.</p>
+  </div>
+</footer>
+  <!-- Link to your product.js file -->
+  <script src="product.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userMenu = document.getElementById('userMenu');
+        const loggedInUser = JSON.parse(localStorage.getItem('cartfox_logged_in_user'));
+
+        if (loggedInUser && userMenu) {
+            userMenu.innerHTML = `
+                <span style="font-weight: bold; color: #ff6b00;">Hi, ${loggedInUser.name} 👋</span>
+                <button onclick="logoutUser()" style="margin-left: 15px; border: none; background: #eee; padding: 5px 10px; cursor: pointer; border-radius: 5px;">Logout</button>
+            `;
+        }
+    });
+
+    function logoutUser() {
+        localStorage.removeItem('cartfox_logged_in_user');
+        alert("You have been logged out.");
+        window.location.reload(); 
+    }
+</script>
+</body>
+</html>

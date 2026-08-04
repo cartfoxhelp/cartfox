@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - CartFox</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <style>
+    .checkout-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+      margin-top: 20px;
+    }
+    @media (max-width: 768px) {
+      .checkout-container { grid-template-columns: 1fr; }
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: var(--dark-color);
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .order-summary-box {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+      font-weight: bold;
+      font-size: 18px;
+      color: var(--dark-color);
+    }
+  </style>
+</head>
+<body>
+  <div id="userMenu">
+    <a href="login.html">Login</a> | <a href="signup.html">Sign Up</a>
+</div>
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">🦊 CartFox</a>
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="product.html">Products</a></li>
+        <li><a href="cart.html">Cart</a></li>
+      </ul>
+      <div class="cart-icon" onclick="goToCart()" style="cursor: pointer;">
+      <div class="cart-icon" onclick="goToCart()">
+        🛒
+        <span class="cart-count" id="cartCount">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <section class="hero" style="padding: 30px 20px;">
+    <div class="container">
+      <h1>Secure Checkout</h1>
+      <p>Automatic fast delivery included with every order</p>
+    </div>
+  </section>
+
+  <!-- CHECKOUT SECTION -->
+  <section class="section">
+    <div class="container">
+      <form id="checkoutForm" onsubmit="handleCheckout(event)">
+        <div class="checkout-container">
+          
+          <!-- LEFT: SHIPPING & CUSTOMER DETAILS -->
+          <div class="card" style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <h2 style="margin-bottom: 20px; color: var(--dark-color); font-size: 20px;">📦 Shipping Information</h2>
+            
+            <div class="form-group">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" placeholder="Enter your email address" required>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" placeholder="10-digit mobile number" required pattern="[0-9]{10}">
+            </div>
+
+            <div class="form-group">
+              <label for="address">Delivery Address (Street / Area)</label>
+              <textarea id="address" rows="3" placeholder="House no, Street name, Landmark" required></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" placeholder="City name" required>
+              </div>
+              <div class="form-group">
+                <label for="pincode">Pincode</label>
+                <input type="text" id="pincode" placeholder="6-digit pincode" required pattern="[0-9]{6}">
+              </div>
+            </div>
+
+            <div style="margin-top: 15px; padding: 12px; background: #E8F8F5; border-left: 4px solid #27AE60; border-radius: 4px;">
+              <small style="color: #1e8449; font-weight: bold;">⚡ Automatic Dispatch:</small>
+              <small style="color: #555; display: block; margin-top: 2px;">Your order will be automatically processed and shipped with standard doorstep delivery (No extra shipping charges).</small>
+            </div>
+          </div>
+
+          <!-- RIGHT: ORDER SUMMARY -->
+          <div>
+            <div class="order-summary-box">
+              <h2 style="margin-bottom: 15px; color: var(--dark-color); font-size: 18px;">Order Summary</h2>
+              
+              <div id="checkoutItemsList" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                <!-- Items populated dynamically -->
+              </div>
+
+              <div class="summary-item">
+                <span>Subtotal</span>
+                <span>₹<span id="summarySubtotal">0</span></span>
+              </div>
+
+              <div class="summary-item">
+                <span>Delivery Charge</span>
+                <span style="color: #27AE60; font-weight: bold;">FREE</span>
+              </div>
+
+              <div class="summary-total">
+                <span>Total Amount</span>
+                <span>₹<span id="summaryTotal">0</span></span>
+              </div>
+
+              <button type="submit" class="btn" style="width: 100%; margin-top: 20px; padding: 14px; font-size: 16px; font-weight: bold; cursor: pointer;">Place Order Now</button>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; padding: 40px 20px; background: #1a1a1a; color: #fff;">
+    
+    <!-- Section 1: About Brand -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 18px;">🦊 CartFox</h3>
+      <p style="color: #bbb; font-size: 14px; line-height: 1.6;">Your trusted online shopping destination for premium own-brand products and curated Amazon finds at the best prices.</p>
+    </div>
+
+    <!-- Section 2: Quick Links -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Quick Links</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 8px;"><a href="index.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Home</a></li>
+        <li style="margin-bottom: 8px;"><a href="product.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Products Catalog</a></li>
+        <li style="margin-bottom: 8px;"><a href="cart.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Shopping Cart</a></li>
+        <li style="margin-bottom: 8px;"><a href="checkout.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Checkout</a></li>
+      </ul>
+    </div>
+
+    <!-- Section 3: Customer Service -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Customer Service</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 8px;"><a href="#contact" style="color: #bbb; text-decoration: none; font-size: 14px;">Contact Us</a></li>
+        <li style="margin-bottom: 8px;"><a href="#shipping" style="color: #bbb; text-decoration: none; font-size: 14px;">Shipping & Delivery</a></li>
+        <li style="margin-bottom: 8px;"><a href="#faq" style="color: #bbb; text-decoration: none; font-size: 14px;">FAQ</a></li>
+      </ul>
+    </div>
+
+    <!-- Section 4: Legal & Compliance (Google Standard) -->
+    <div class="footer-section">
+      <h3 style="color: #fff; margin-bottom: 15px; font-size: 16px;">Legal & Policies</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 8px;"><a href="privacy.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Privacy Policy</a></li>
+        <li style="margin-bottom: 8px;"><a href="terms.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Terms & Conditions</a></li>
+        <li style="margin-bottom: 8px;"><a href="refund.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Refund & Returns</a></li>
+        <li style="margin-bottom: 8px;"><a href="disclaimer.html" style="color: #bbb; text-decoration: none; font-size: 14px;">Affiliate Disclaimer</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Footer Bottom Copyright -->
+  <div class="footer-bottom" style="background: #111; color: #888; text-align: center; padding: 15px 20px; font-size: 13px; border-top: 1px solid #333;">
+    <p>&copy; 2026 CartFox. All rights reserved. Designed with security & fast delivery.</p>
+  </div>
+</footer>
+
+  <!-- Razorpay Payment Gateway Script (Added Here) -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Checkout Logic Script -->
+  <script src="checkout.js"></script>
+
+  <!-- User Login Status Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userMenu = document.getElementById('userMenu');
+        const loggedInUser = JSON.parse(localStorage.getItem('cartfox_logged_in_user'));
+
+        if (loggedInUser && userMenu) {
+            userMenu.innerHTML = `
+                <span style="font-weight: bold; color: #ff6b00;">Hi, ${loggedInUser.name} 👋</span>
+                <button onclick="logoutUser()" style="margin-left: 15px; border: none; background: #eee; padding: 5px 10px; cursor: pointer; border-radius: 5px;">Logout</button>
+            `;
+        }
+    });
+
+    function logoutUser() {
+        localStorage.removeItem('cartfox_logged_in_user');
+        alert("You have been logged out.");
+        window.location.reload(); 
+    }
+  </script>
+</body>
+</html>
