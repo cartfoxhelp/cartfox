@@ -30,8 +30,9 @@ const app = express();
 // ===============================
 
 const allowedOrigins = [
+    "https://cartfox.pages.dev",
     "https://cartfoxhelp.github.io",
-    "https://cartfox-backend.onrender.com",
+    "https://cartfox.onrender.com",
     "http://127.0.0.1:5500",
     "http://localhost:5500"
 ];

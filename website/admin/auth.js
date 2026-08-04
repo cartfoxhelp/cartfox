@@ -1,6 +1,6 @@
 // This file handles frontend authentication: token storage, redirection, and page protection.
 
-const API_BASE_URL = "https://cartfox-backend.onrender.com";
+const API_BASE_URL = "https://cartfox.onrender.com";
 
 function saveToken(token, rememberMe) {
     const storage = rememberMe ? localStorage : sessionStorage;
