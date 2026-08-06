@@ -5,40 +5,27 @@ const path = require("path");
 const { pool } = require("../database");
 const authMiddleware = require("../auth");
 const router = express.Router();
-
-// ==============================
-// Upload Folder
-// ==============================
-
-const uploadDir = path.join(__dirname, "../uploads");
-
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../config/cloudinary");
 
 // ==============================
 // Multer Storage
 // ==============================
 
-const storage = multer.diskStorage({
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-
-    filename: (req, file, cb) => {
-
-        const safeName = file.originalname
+const storage = new CloudinaryStorage({
+    cloudinary,
+    params: async (req, file) => ({
+        folder: "cartfox/products",
+        allowed_formats: ["jpg", "jpeg", "png", "webp"],
+        public_id: `${Date.now()}-${file.originalname
             .replace(/\s+/g, "-")
-            .replace(/[^a-zA-Z0-9.\-_]/g, "");
-
-        cb(null, Date.now() + "-" + safeName);
-
-    }
-
+            .replace(/[^a-zA-Z0-9._-]/g, "")}`
+    })
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage })
 
 // ==============================
 // Helper
@@ -289,7 +276,6 @@ router.put("/:id", authMiddleware, upload.array("images", 3), async (req, res) =
             stock
         } = req.body;
 
-        // Get existing product to determine current images
         const oldProductResult = await pool.query(
             "SELECT imageurl FROM products WHERE id=$1",
             [req.params.id]
@@ -302,36 +288,18 @@ router.put("/:id", authMiddleware, upload.array("images", 3), async (req, res) =
             });
         }
 
-        const oldImagesRaw = oldProductResult.rows[0].imageurl;
-        let imageUrlToStore = oldImagesRaw; // Keep old images by default
+      const oldImagesRaw = oldProductResult.rows[0].imageurl;
+let imageUrlToStore = oldImagesRaw;
 
-        if (req.files && req.files.length > 0) {
-            // New files uploaded, replace old ones.
-            const newImagePaths = req.files.map(file => `/uploads/${file.filename}`);
-            imageUrlToStore = JSON.stringify(newImagePaths);
-
-            // Now, delete old files if they exist and are managed by us.
-            if (oldImagesRaw) {
-                try {
-                    const oldImages = JSON.parse(oldImagesRaw);
-                    if (Array.isArray(oldImages)) {
-                        oldImages.forEach(imagePath => {
-                            if (imagePath && imagePath.startsWith('/uploads/')) {
-                                const fullPath = path.join(__dirname, "..", imagePath);
-                                if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
-                            }
-                        });
-                    }
-                } catch (e) { console.error("Could not parse or delete old image files during update:", e); }
-            }
-        }
-
-
+if (req.files && req.files.length > 0) {
+    const newImagePaths = req.files.map(file => file.path);
+    imageUrlToStore = JSON.stringify(newImagePaths);
+}
         await pool.query(
             `UPDATE products SET
                 name=$1,
                 price=$2,
-                imageurl=$3, // This will now always be a JSON string
+                imageurl=$3,
                 producttype=$4,
                 category=$5,
                 affiliatelink=$6,
@@ -343,7 +311,7 @@ router.put("/:id", authMiddleware, upload.array("images", 3), async (req, res) =
             [
                 name,
                 price,
-                imageUrlToStore, // Use the consistently formatted JSON string
+                imageUrlToStore,
                 producttype,
                 category,
                 affiliatelink,
