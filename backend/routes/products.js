@@ -48,27 +48,26 @@ const FALLBACK_IMAGE_URL = "https://via.placeholder.com/600x400?text=CartFox";
 const BASE_URL = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
 
 function resolveImageValue(imageValue) {
-
-    if (!imageValue) {
-        return FALLBACK_IMAGE_URL;
-    }
+    if (!imageValue) return FALLBACK_IMAGE_URL;
 
     const value = String(imageValue).trim();
 
-    if (!value) {
-        return FALLBACK_IMAGE_URL;
-    }
+    if (!value) return FALLBACK_IMAGE_URL;
 
     // Already full URL
-    if (value.startsWith("http://") || value.startsWith("https://")) {
+    if (/^https?:\/\//i.test(value)) {
         return value;
     }
 
     // Upload image
-    if (value.startsWith("/uploads/") || value.startsWith("uploads/")) {
+    if (value.startsWith("/uploads/")) {
         return `${BASE_URL}${value}`;
     }
-    
+
+    if (value.startsWith("uploads/")) {
+        return `${BASE_URL}/${value}`;
+    }
+
     return FALLBACK_IMAGE_URL;
 }
 function processProduct(product) {
@@ -93,16 +92,13 @@ function processProduct(product) {
         }
     }
 
-
-    product.images = images
-        .filter(Boolean)
-        .map(resolveImageValue);
-
-
+ product.images = images
+    .filter(Boolean)
+    .map(resolveImageValue);
 
 product.imageUrl =
-    images.length > 0
-        ? images[0]
+    product.images.length > 0
+        ? product.images[0]
         : FALLBACK_IMAGE_URL;
 
 return product;

@@ -23,7 +23,7 @@ const authRoutes = require("./routes/auth");
 // const razorpayRoutes = require("./routes/razorpay");
 
 const app = express();
-
+app.set("trust proxy", 1);
 
 // ===============================
 // CORS CONFIGURATION
