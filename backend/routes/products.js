@@ -45,7 +45,9 @@ const upload = multer({ storage });
 // ==============================
 
 const FALLBACK_IMAGE_URL = "https://via.placeholder.com/600x400?text=CartFox";
-const BASE_URL = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+const BASE_URL =
+    process.env.BASE_URL ||
+    "https://cartfox.onrender.com";
 
 function resolveImageValue(imageValue) {
     if (!imageValue) return FALLBACK_IMAGE_URL;
