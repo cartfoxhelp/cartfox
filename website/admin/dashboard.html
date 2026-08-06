@@ -44,7 +44,6 @@
                 <li><a href="#customers" class="nav-link">👥 Customers</a></li>
                 <li><a href="#analytics" class="nav-link">📈 Analytics</a></li>
                 <li><a href="#settings" class="nav-link">⚙️ Settings</a></li>
-                <li><a href="#audit-log" class="nav-link">🛡️ Audit Log</a></li>
             </ul>
         </nav>
     </aside>
@@ -308,84 +307,7 @@
                     </div>
                 </form>
             </div>
-
-            <!-- 2FA Management Section -->
-            <div class="card form-section" style="margin-top: 30px;">
-                <h2 class="card-title">🔒 Two-Factor Authentication (2FA)</h2>
-                
-                <!-- Status Display -->
-                <div id="2fa-status-section">
-                    <p>Status: <strong id="2fa-status-text" style="color: #777;">Checking...</strong></p>
-                    <div class="form-actions" style="margin-top: 10px;">
-                        <button id="toggle-2fa-btn" class="btn btn-secondary" disabled>Enable 2FA</button>
-                    </div>
-                </div>
-
-                <!-- Setup UI (hidden by default) -->
-                <div id="2fa-setup-section" class="hidden">
-                    <p>Scan the QR code with your authenticator app (like Google Authenticator), then enter the 6-digit code to verify.</p>
-                    <div style="text-align: center; margin: 20px 0;">
-                        <img id="2fa-qr-code" src="" alt="QR Code" style="max-width: 200px; border: 5px solid white; box-shadow: var(--shadow);">
-                    </div>
-                    <div class="form-group">
-                        <label for="2fa-verify-code">Verification Code</label>
-                        <input type="text" id="2fa-verify-code" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric">
-                    </div>
-                    <div class="form-actions">
-                        <button id="enable-2fa-verify-btn" class="btn btn-primary">Verify & Enable</button>
-                        <button id="cancel-2fa-setup-btn" class="btn btn-cancel">Cancel</button>
-                    </div>
-                </div>
-
-                <!-- Disable UI (hidden by default) -->
-                <div id="2fa-disable-section" class="hidden">
-                    <p>To disable 2FA, please enter a code from your authenticator app to confirm your identity.</p>
-                    <div class="form-group"><label for="2fa-disable-code">Current 2FA Code</label><input type="text" id="2fa-disable-code" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric"></div>
-                    <div class="form-actions"><button id="disable-2fa-confirm-btn" class="btn btn-danger">Confirm & Disable</button><button id="cancel-2fa-disable-btn" class="btn btn-cancel">Cancel</button></div>
-                </div>
-            </div>
-
-            <!-- Recovery Codes Modal (hidden by default) -->
-            <div id="recovery-codes-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 2000;">
-                <div class="card" style="width: 90%; max-width: 500px; text-align: center;">
-                    <h2 class="card-title">🔑 Save Your Recovery Codes</h2>
-                    <p style="margin-bottom: 20px;">Store these codes in a safe place. They can be used to access your account if you lose your device.</p>
-                    <div id="recovery-codes-list" style="background: #f4f4f4; border-radius: 5px; padding: 15px; font-family: 'Courier New', monospace; letter-spacing: 1px; margin-bottom: 20px;">
-                        <!-- Codes will be injected here -->
-                    </div>
-                    <div class="form-actions" style="justify-content: center;">
-                        <button id="copy-recovery-codes-btn" class="btn btn-secondary">Copy Codes</button>
-                        <button id="close-recovery-modal-btn" class="btn btn-primary">I have saved these codes</button>
-                    </div>
-                </div>
-            </div>
         </section>
-
-        <!-- ========================================== -->
-        <!-- 🛡️ 7. AUDIT LOG SECTION                    -->
-        <!-- ========================================== -->
-        <section id="audit-log" class="content-section hidden-section">
-            <div class="card table-container">
-                <h2 class="card-title">🛡️ Security Audit Log</h2>
-                <p style="color: #777; margin-bottom: 20px;">Recent security-related events are logged here.</p>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date & Time</th>
-                                <th>User</th>
-                                <th>Action</th>
-                                <th>IP Address</th>
-                            </tr>
-                        </thead>
-                        <tbody id="auditLogTableBody">
-                            <!-- Logs will be loaded here via JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
     </main>
 </div>
 

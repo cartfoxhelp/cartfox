@@ -35,23 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok && data.success) {
+                saveToken(data.token, false);
 
-                if (data.twoFactorRequired) {
-
-                    sessionStorage.setItem(
-                        'cartfox_temp_token',
-                        data.tempToken
-                    );
-
-                    window.location.href = '/admin/verify-2fa';
-
-                } else {
-
-                    saveToken(data.token, false);
-
-                    window.location.href = '/admin/dashboard';
-
-                }
+                window.location.href = '/admin/dashboard';
 
             } else {
 

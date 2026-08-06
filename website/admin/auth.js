@@ -47,14 +47,12 @@ function checkAuth() {
     const path = window.location.pathname;
 
     // Pages accessible without login
-    const publicPaths = [
-        '/admin/login',
-        '/admin/login.html',
-        '/admin/forgot-password',
-        '/admin/forgot-password.html',
-        '/admin/verify-2fa',
-        '/admin/verify-2fa.html'
-    ];
+   const publicPaths = [
+    '/admin/login',
+    '/admin/login.html',
+    '/admin/forgot-password',
+    '/admin/forgot-password.html'
+];
 
     const isPublicPage = publicPaths.some(publicPath =>
         path.endsWith(publicPath)
@@ -87,9 +85,6 @@ function checkAuth() {
 
             initDashboardPage();
 
-            if (typeof check2faStatus === 'function') {
-                check2faStatus();
-            }
         }
 
 
