@@ -5,14 +5,9 @@ const path = require("path");
 const { pool } = require("../database");
 const authMiddleware = require("../auth");
 const router = express.Router();
+
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("../config/cloudinary");
-
-// ==============================
-// Multer Storage
-// ==============================
-
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const storage = new CloudinaryStorage({
     cloudinary,
@@ -25,8 +20,7 @@ const storage = new CloudinaryStorage({
     })
 });
 
-const upload = multer({ storage })
-
+const upload = multer({ storage });
 // ==============================
 // Helper
 // ==============================
