@@ -69,70 +69,101 @@ document.addEventListener(
 
 
 async function loadProducts() {
-
-    const productGrid =
-        document.getElementById('productGrid');
-
-
+    console.log("🦊 CartFox: Loading products...");
     try {
-
-
-        const response =
-            await fetch(API_URL);
-
-
+        const response = await fetch(API_URL, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            },
+            cache: "no-store"
+        });
         if (!response.ok) {
-
             throw new Error(
-                'Failed to fetch products'
+                `Products API failed: ${response.status} ${response.statusText}`
             );
-
         }
-
-
-        allProducts =
-            await response.json();
-
-        renderHomepageProducts(allProducts);
-
-        renderCategoryCards();
-
-        initSearch();
-
+        const data = await response.json();
+        console.log("🦊 CartFox: Products received:", data);
+        // Support both direct array and { products: [] } response
+        if (Array.isArray(data)) {
+            allProducts = data;
+        } else if (Array.isArray(data.products)) {
+            allProducts = data.products;
+        } else {
+            throw new Error("Invalid products response format");
+        }
+        console.log(
+            `🦊 CartFox: ${allProducts.length} products loaded`
+        );
+        // ==========================================
+        // HOMEPAGE
+        // ==========================================
+        const featuredProducts =
+            document.getElementById("featuredProducts");
+        if (featuredProducts) {
+            renderHomepageProducts(allProducts);
+        }
+        // ==========================================
+        // PRODUCT LISTING PAGE
+        // ==========================================
+        const productGrid =
+            document.getElementById("productGrid");
+        if (productGrid) {
+            renderCategoryCards();
+            initSearch();
+            applySearchFromUrl();
+            sortAndRender();
+        }
+        // ==========================================
+        // NEWSLETTER
+        // ==========================================
         initNewsletter();
-
-        applySearchFromUrl();
-
-        sortAndRender();
-
+        // ==========================================
+        // CART
+        // ==========================================
         updateCartCount();
-
-
-
-    }
-
-    catch(error) {
-
-
+    } catch (error) {
         console.error(
-            'Error loading products:',
+            "❌ CartFox: Error loading products:",
             error
         );
-
-
-        if(productGrid) {
-
+        // Homepage error
+        const featuredProducts =
+            document.getElementById("featuredProducts");
+        if (featuredProducts) {
+            featuredProducts.innerHTML = `
+                &lt;div style="
+                    grid-column:1/-1;
+                    text-align:center;
+                    padding:30px;
+                "&gt;
+                    &lt;h3&gt;Unable to load products&lt;/h3&gt;
+                    &lt;p style="color:#777;"&gt;
+                        Please try again later.
+                    &lt;/p&gt;
+                &lt;/div&gt;
+            `;
+        }
+        // Product page error
+        const productGrid =
+            document.getElementById("productGrid");
+        if (productGrid) {
             productGrid.innerHTML =
             `
-            <p style="color:red;text-align:center;">
-            ⚠️ Cannot connect to CartFox server
-            </p>
+                &lt;div style="
+                    grid-column:1/-1;
+                    text-align:center;
+                    padding:30px;
+                "&gt;
+                    &lt;h3&gt;Unable to load products&lt;/h3&gt;
+                    &lt;p style="color:#777;"&gt;
+                        Please try again later.
+                    &lt;/p&gt;
+                &lt;/div&gt;
             `;
-
         }
-
     }
-
 }
 
 
