@@ -56,7 +56,7 @@ document.addEventListener(
     () => {
 
         loadProducts();
-        updateCartCount(); // Use unified function
+        updateCartCount();
 
     }
 );
