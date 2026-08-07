@@ -541,54 +541,49 @@ function displayProducts(items) {
 // HOMEPAGE FEATURED PRODUCTS
 // ===============================
 function renderHomepageProducts(products) {
-    const grid = document.getElementById('featuredProducts');
-    if (!grid) return; // Only run on homepage
+    const grid = document.getElementById("featuredProducts");
+    if (!grid) return;
 
-    // Get latest 6 products
-    const productsToDisplay = [...products].reverse().slice(0, 6);
-    
-    grid.innerHTML = '';
+    const items = [...products].reverse().slice(0, 6);
 
-    if(productsToDisplay.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px;"><h3>No products available yet.</h3></div>';
+    grid.innerHTML = "";
+
+    if (items.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px;"><h3>No products available yet.</h3></div>`;
         return;
     }
 
-    productsToDisplay.forEach(product => {
-        const imageList = (product.images && product.images.length > 0) ? product.images : (product.imageUrl ? [product.imageUrl] : []);
-        // Use the canonical resolveImageUrl function
-        const safeImgUrl = imageList.length > 0 ? resolveImageUrl(imageList[0]) : 'https://via.placeholder.com/250';
+    items.forEach(p => {
+        const imageList = (p.images && p.images.length > 0) ? p.images : (p.imageUrl ? [p.imageUrl] : []);
+        const imageUrl = imageList.length > 0 ? resolveImageUrl(imageList[0]) : "https://via.placeholder.com/250";
+        const prodId = p._id || p.id;
+        const productType = p.producttype || p.productType;
+        const affiliateLink = p.affiliatelink || p.affiliateLink;
+        const rating = p.rating ? `⭐ ${parseFloat(p.rating).toFixed(1)}` : '⭐ 4.5';
 
-        const imageHtml = `<img src="${safeImgUrl}" alt="${product.name}" style="width:100%; height:180px; object-fit:contain;" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=CartFox';">`;
-
-        let actionButtonHtml = '';
-        const prodId = product.id || product._id;
-        const productType = String(product.productType || product.producttype || '').trim().toLowerCase();
-        const affiliateLink = product.affiliateLink || product.affiliatelink;
-
+        let actionButtonHtml;
         if (productType === 'amazon' && affiliateLink) {
             actionButtonHtml = `<a href="${affiliateLink}" target="_blank" class="btn-buy-amazon">🛒 Buy on Amazon</a>`;
         } else {
-            // Use the canonical addToCart(productId) from script.js
             actionButtonHtml = `<button class="btn-add-cart" onclick="addToCart('${prodId}'); event.preventDefault();">Add to Cart</button>`;
         }
 
         const detailUrl = `product.html?id=${prodId}`;
-        const randomReviews = product.reviews || Math.floor(Math.random() * 200 + 50);
-        const rating = product.rating || 4.5;
 
         const card = document.createElement('div');
-        card.className = 'product-card slide-up'; // Using a class for potential animation
+        card.className = 'product-card slide-up';
         card.innerHTML = `
             <a href="${detailUrl}" style="text-decoration: none; color: inherit; display: block;">
-              <div class="product-image" style="background: white; padding: 10px; border-bottom:1px solid #eee;">${imageHtml}</div>
+              <div class="product-image" style="background: white; padding: 10px; border-bottom:1px solid #eee;">
+                <img src="${imageUrl}" alt="${p.name}" style="width:100%; height:180px; object-fit:contain;" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=CartFox';">
+              </div>
             </a>
             <div class="product-info" style="padding: 15px;">
               <a href="${detailUrl}" style="text-decoration: none; color: inherit;">
-                <div class="product-name" style="font-weight:bold; font-size:16px; margin-bottom:5px;">${product.name}</div>
+                <div class="product-name" style="font-weight:bold; font-size:16px; margin-bottom:5px;">${p.name}</div>
               </a>
-              <div class="product-price" style="color: var(--primary-color, #3498DB); font-size:18px; font-weight:bold; margin-bottom:5px;">₹${Number(product.price).toLocaleString('en-IN')}</div>
-              <div class="product-rating" style="font-size:12px; color:#777;">⭐ ${rating} (${randomReviews} reviews)</div>
+              <div class="product-price" style="color: var(--primary-color, #3498DB); font-size:18px; font-weight:bold; margin-bottom:5px;">₹${Number(p.price).toLocaleString('en-IN')}</div>
+              <div class="product-rating" style="font-size:12px; color:#777;">${rating}</div>
               ${actionButtonHtml}
             </div>
           `;
