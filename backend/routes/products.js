@@ -130,34 +130,35 @@ function cleanImageUrl(value) {
         .trim();
 
     // -------------------------------------------------
-    // If Markdown contains a URL:
-    //
+    // Markdown URL:
     // [text](https://example.com/image.jpg)
+    //
+    // Also handles malformed nested Markdown
     // -------------------------------------------------
 
-    const markdownMatch = url.match(
-        /\]\((https?:\/\/[^)\s]+)\)/
-    );
+    const markdownMatches = [
+        ...url.matchAll(/\]\((https?:\/\/[^)\s]+)\)/gi)
+    ];
 
-    if (markdownMatch) {
-        url = markdownMatch[1];
+    if (markdownMatches.length > 0) {
+        url = markdownMatches[markdownMatches.length - 1][1];
     }
 
     // -------------------------------------------------
-    // Extract first HTTP/HTTPS URL
+    // Extract clean HTTP/HTTPS URL
     // -------------------------------------------------
 
     const httpMatch = url.match(
-        /https?:\/\/[^\s"'<>]+/i
+        /https?:\/\/[^\s"'<>()[\]]+/i
     );
 
     if (httpMatch) {
 
         url = httpMatch[0];
 
-        // Remove common Markdown leftovers
+        // Remove Markdown leftovers
         url = url
-            .replace(/[)\]}]+$/g, "")
+            .replace(/[)\]}>,.*]+$/g, "")
             .trim();
 
         return url;
