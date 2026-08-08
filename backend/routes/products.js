@@ -1,19 +1,32 @@
 const express = require("express");
 const multer = require("multer");
-const fs = require("fs");
 const path = require("path");
+
 const { pool } = require("../database");
 const authMiddleware = require("../auth");
-const router = express.Router();
 
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("../config/cloudinary");
 
+const router = express.Router();
+
+// =====================================================
+// CLOUDINARY STORAGE
+// =====================================================
+
 const storage = new CloudinaryStorage({
     cloudinary,
+
     params: async (req, file) => ({
         folder: "cartfox/products",
-        allowed_formats: ["jpg", "jpeg", "png", "webp"],
+
+        allowed_formats: [
+            "jpg",
+            "jpeg",
+            "png",
+            "webp"
+        ],
+
         public_id: `${Date.now()}-${file.originalname
             .replace(/\s+/g, "-")
             .replace(/[^a-zA-Z0-9._-]/g, "")}`
@@ -21,118 +34,202 @@ const storage = new CloudinaryStorage({
 });
 
 const upload = multer({ storage });
-// ==============================
-// Helper
-// ==============================
 
-const FALLBACK_IMAGE_URL = "https://via.placeholder.com/600x400?text=CartFox";
-const BASE_URL =
-    process.env.BASE_URL ||
-    "https://cartfox.onrender.com";
+// =====================================================
+// FALLBACK
+// =====================================================
 
-function resolveImageValue(imageValue) {
-    if (!imageValue) return FALLBACK_IMAGE_URL;
+const FALLBACK_IMAGE_URL =
+    "https://via.placeholder.com/600x400?text=CartFox";
 
-    const value = String(imageValue).trim();
+// =====================================================
+// CLEAN IMAGE URL
+// =====================================================
 
-    if (!value) return FALLBACK_IMAGE_URL;
+function cleanImageUrl(value) {
 
-    // Already full URL
-    if (/^https?:\/\//i.test(value)) {
-        return value;
+    if (!value) {
+        return null;
     }
 
-    // Upload image
-    if (value.startsWith("/uploads/")) {
-        return `${BASE_URL}${value}`;
+    let url = String(value).trim();
+
+    if (!url) {
+        return null;
     }
 
-    if (value.startsWith("uploads/")) {
-        return `${BASE_URL}/${value}`;
+    // -------------------------------------------------
+    // Handle Markdown image/link format
+    // Example:
+    // [https://example.com/image.jpg](https://example.com/image.jpg)
+    // -------------------------------------------------
+
+    const markdownMatch = url.match(
+        /\]\((https?:\/\/[^)]+)\)/
+    );
+
+    if (markdownMatch) {
+        return markdownMatch[1];
     }
 
-    return FALLBACK_IMAGE_URL;
+    // -------------------------------------------------
+    // Handle [URL] format
+    // -------------------------------------------------
+
+    const bracketMatch = url.match(
+        /^\[(https?:\/\/[^\]]+)\]$/
+    );
+
+    if (bracketMatch) {
+        return bracketMatch[1];
+    }
+
+    // -------------------------------------------------
+    // Extract URL if extra text exists
+    // -------------------------------------------------
+
+    const httpMatch = url.match(
+        /(https?:\/\/[^\s"'<>\])]+)/
+    );
+
+    if (httpMatch) {
+        return httpMatch[1];
+    }
+
+    // -------------------------------------------------
+    // Local upload compatibility
+    // -------------------------------------------------
+
+    if (url.startsWith("/uploads/")) {
+        return `${process.env.BASE_URL || "https://cartfox.onrender.com"}${url}`;
+    }
+
+    if (url.startsWith("uploads/")) {
+        return `${process.env.BASE_URL || "https://cartfox.onrender.com"}/${url}`;
+    }
+
+    return null;
 }
-function processProduct(product) {
 
-    if (!product) return product;
+// =====================================================
+// PARSE IMAGE FIELD
+// =====================================================
+
+function parseImages(imageValue) {
+
+    if (!imageValue) {
+        return [];
+    }
 
     let images = [];
 
-    // Assume imageurl is always a JSON string array from now on.
-    // Handle legacy single-string entries gracefully.
-    if (product.imageurl) {
+    // Already array
+    if (Array.isArray(imageValue)) {
+        images = imageValue;
+    }
+
+    // String
+    else if (typeof imageValue === "string") {
+
+        const value = imageValue.trim();
+
+        // Try JSON first
         try {
-            const parsed = JSON.parse(product.imageurl);
+
+            const parsed = JSON.parse(value);
+
             if (Array.isArray(parsed)) {
                 images = parsed;
-            } else if (typeof parsed === 'string') {
-                images = [parsed]; // Handle case where JSON.parse returns a single string
             }
-        } catch (e) {
-            // Fallback for old/malformed entries: treat as a single image path
-            images = [product.imageurl];
+
+            else if (typeof parsed === "string") {
+                images = [parsed];
+            }
+
+        } catch {
+
+            // Legacy single URL
+            images = [value];
         }
     }
 
- product.images = images
-    .filter(Boolean)
-    .map(resolveImageValue);
-
-product.imageUrl =
-    product.images.length > 0
-        ? product.images[0]
-        : FALLBACK_IMAGE_URL;
-
-return product;
+    return images
+        .map(cleanImageUrl)
+        .filter(Boolean);
 }
-// ==============================
+
+// =====================================================
+// PROCESS PRODUCT
+// =====================================================
+
+function processProduct(product) {
+
+    if (!product) {
+        return product;
+    }
+
+    const images = parseImages(product.imageurl);
+
+    product.images = images;
+
+    product.imageUrl =
+        images.length > 0
+            ? images[0]
+            : FALLBACK_IMAGE_URL;
+
+    return product;
+}
+
+// =====================================================
 // GET ALL PRODUCTS
-// ==============================
+// =====================================================
 
 router.get("/", async (req, res) => {
 
     try {
 
         const result = await pool.query(
-
-            `SELECT * FROM products
-             ORDER BY id DESC`
-
+            `
+            SELECT *
+            FROM products
+            ORDER BY id DESC
+            `
         );
 
-        const products = result.rows.map(processProduct);
+        const products =
+            result.rows.map(processProduct);
 
         res.json(products);
 
     } catch (err) {
 
-        console.error(err);
+        console.error(
+            "GET PRODUCTS ERROR:",
+            err
+        );
 
         res.status(500).json({
             success: false,
             message: err.message
         });
-
     }
-
 });
 
-// ==============================
+// =====================================================
 // GET SINGLE PRODUCT
-// ==============================
+// =====================================================
 
 router.get("/:id", async (req, res) => {
 
     try {
 
         const result = await pool.query(
-
-            `SELECT * FROM products
-             WHERE id=$1`,
-
+            `
+            SELECT *
+            FROM products
+            WHERE id=$1
+            `,
             [req.params.id]
-
         );
 
         if (result.rows.length === 0) {
@@ -141,268 +238,309 @@ router.get("/:id", async (req, res) => {
                 success: false,
                 message: "Product not found"
             });
-
         }
 
-        res.json(processProduct(result.rows[0]));
+        res.json(
+            processProduct(result.rows[0])
+        );
 
     } catch (err) {
 
-        console.error(err);
+        console.error(
+            "GET SINGLE PRODUCT ERROR:",
+            err
+        );
 
         res.status(500).json({
             success: false,
             message: err.message
         });
-
     }
-
 });
-// ==============================
-// ADD NEW PRODUCT
-// ==============================
 
-router.post("/", authMiddleware, upload.array("images", 3), async (req, res) => {
+// =====================================================
+// ADD PRODUCT
+// =====================================================
 
-    try {
+router.post(
+    "/",
+    authMiddleware,
+    upload.array("images", 3),
+    async (req, res) => {
 
-        const {
+        try {
 
-            name,
-            price,
-            producttype,
-            category,
-            affiliatelink,
-            description,
-            rating,
-            stock
-
-        } = req.body;
-
-        let images = [];
-
-        if (req.files && req.files.length > 0) {
-
-            images = req.files.map(file => `/uploads/${file.filename}`);
-
-        }
-
-        const imageUrl = JSON.stringify(images);
-
-        const result = await pool.query(
-
-            `INSERT INTO products
-            (
+            const {
                 name,
                 price,
-                imageurl,
                 producttype,
                 category,
                 affiliatelink,
                 description,
                 rating,
                 stock
-            )
+            } = req.body;
 
-            VALUES
+            // -----------------------------------------
+            // IMPORTANT:
+            // Cloudinary URL = file.path
+            // -----------------------------------------
 
-            ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+            let images = [];
 
-            RETURNING id`,
+            if (
+                req.files &&
+                req.files.length > 0
+            ) {
 
-            [
+                images = req.files
+                    .map(file => file.path)
+                    .filter(Boolean);
+            }
 
-                name,
-                price,
-                imageUrl,
-                producttype || "own",
-                category || "General",
-                affiliatelink || "",
-                description || "",
-                rating || 0,
-                stock || 0
+            const imageUrl =
+                JSON.stringify(images);
 
-            ]
+            const result = await pool.query(
+                `
+                INSERT INTO products
+                (
+                    name,
+                    price,
+                    imageurl,
+                    producttype,
+                    category,
+                    affiliatelink,
+                    description,
+                    rating,
+                    stock
+                )
 
-        );
+                VALUES
+                ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 
-        res.status(201).json({
+                RETURNING id
+                `,
+                [
+                    name,
+                    price,
+                    imageUrl,
+                    producttype || "own",
+                    category || "General",
+                    affiliatelink || "",
+                    description || "",
+                    rating || 0,
+                    stock || 0
+                ]
+            );
 
-            success: true,
-            message: "Product Added Successfully",
+            res.status(201).json({
 
-            id: result.rows[0].id
+                success: true,
 
-        });
+                message:
+                    "Product Added Successfully",
 
-    }
+                id: result.rows[0].id
+            });
 
-    catch (err) {
+        } catch (err) {
 
-        console.error(err);
+            console.error(
+                "ADD PRODUCT ERROR:",
+                err
+            );
 
-        res.status(500).json({
+            res.status(500).json({
 
-            success: false,
-            message: err.message
-
-        });
-
-    }
-
-});
-// ==============================
-// UPDATE PRODUCT
-// ==============================
-
-router.put("/:id", authMiddleware, upload.array("images", 3), async (req, res) => {
-
-    try {
-
-        const {
-            name,
-            price,
-            producttype,
-            category,
-            affiliatelink,
-            description,
-            rating,
-            stock
-        } = req.body;
-
-        const oldProductResult = await pool.query(
-            "SELECT imageurl FROM products WHERE id=$1",
-            [req.params.id]
-        );
-
-        if (oldProductResult.rows.length === 0) {
-            return res.status(404).json({
                 success: false,
-                message: "Product not found"
+
+                message: err.message
             });
         }
+    }
+);
 
-      const oldImagesRaw = oldProductResult.rows[0].imageurl;
-let imageUrlToStore = oldImagesRaw;
+// =====================================================
+// UPDATE PRODUCT
+// =====================================================
 
-if (req.files && req.files.length > 0) {
-    const newImagePaths = req.files.map(file => file.path);
-    imageUrlToStore = JSON.stringify(newImagePaths);
-}
-        await pool.query(
-            `UPDATE products SET
-                name=$1,
-                price=$2,
-                imageurl=$3,
-                producttype=$4,
-                category=$5,
-                affiliatelink=$6,
-                description=$7,
-                rating=$8,
-                stock=$9,
-                updated_at=CURRENT_TIMESTAMP
-            WHERE id=$10`,
-            [
+router.put(
+    "/:id",
+    authMiddleware,
+    upload.array("images", 3),
+    async (req, res) => {
+
+        try {
+
+            const {
                 name,
                 price,
-                imageUrlToStore,
                 producttype,
                 category,
                 affiliatelink,
                 description,
                 rating,
-                stock,
-                req.params.id
-            ]
-        );
+                stock
+            } = req.body;
 
-        res.json({
-            success: true,
-            message: "Product Updated Successfully"
-        });
+            const oldProductResult =
+                await pool.query(
+                    `
+                    SELECT imageurl
+                    FROM products
+                    WHERE id=$1
+                    `,
+                    [req.params.id]
+                );
 
-    } catch (err) {
+            if (
+                oldProductResult.rows.length === 0
+            ) {
 
-        console.error(err);
+                return res.status(404).json({
+                    success: false,
+                    message: "Product not found"
+                });
+            }
 
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
+            let imageUrlToStore =
+                oldProductResult.rows[0].imageurl;
 
-    }
+            // -----------------------------------------
+            // If new images uploaded
+            // save Cloudinary URLs
+            // -----------------------------------------
 
-});
+            if (
+                req.files &&
+                req.files.length > 0
+            ) {
 
-// ==============================
-// DELETE PRODUCT
-// ==============================
+                const newImages =
+                    req.files
+                        .map(file => file.path)
+                        .filter(Boolean);
 
-router.delete("/:id", authMiddleware, async (req, res) => {
+                imageUrlToStore =
+                    JSON.stringify(newImages);
+            }
 
-    try {
-        // First, get the image URLs to delete the files
-        const productResult = await pool.query(
-            "SELECT imageurl FROM products WHERE id=$1",
-            [req.params.id]
-        );
+            await pool.query(
+                `
+                UPDATE products
+                SET
+                    name=$1,
+                    price=$2,
+                    imageurl=$3,
+                    producttype=$4,
+                    category=$5,
+                    affiliatelink=$6,
+                    description=$7,
+                    rating=$8,
+                    stock=$9,
+                    updated_at=CURRENT_TIMESTAMP
 
-        // Then, delete the product from the database
-        const result = await pool.query(
+                WHERE id=$10
+                `,
+                [
+                    name,
+                    price,
+                    imageUrlToStore,
+                    producttype || "own",
+                    category || "General",
+                    affiliatelink || "",
+                    description || "",
+                    rating || 0,
+                    stock || 0,
+                    req.params.id
+                ]
+            );
 
-            "DELETE FROM products WHERE id=$1 RETURNING id",
+            res.json({
 
-            [req.params.id]
-        );
+                success: true,
 
-        // If deletion was successful, delete the image files from the server
-        if (productResult.rows.length > 0 && productResult.rows[0].imageurl) {
-            try {
-                const images = JSON.parse(productResult.rows[0].imageurl);
-                if (Array.isArray(images)) {
-                    images.forEach(imagePath => {
-                        const fullPath = path.join(__dirname, "..", imagePath);
-                        if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
-                    });
-                }
-            } catch (e) { console.error("Could not parse or delete image files:", e); }
-        }
-
-        if (result.rows.length === 0) {
-
-            return res.status(404).json({
-
-                success: false,
-                message: "Product not found"
-
+                message:
+                    "Product Updated Successfully"
             });
 
+        } catch (err) {
+
+            console.error(
+                "UPDATE PRODUCT ERROR:",
+                err
+            );
+
+            res.status(500).json({
+
+                success: false,
+
+                message: err.message
+            });
         }
-
-        res.json({
-
-            success: true,
-            message: "Product Deleted Successfully"
-
-        });
-
-    } catch (err) {
-
-        console.error(err);
-
-        res.status(500).json({
-
-            success: false,
-            message: err.message
-
-        });
-
     }
+);
 
-});
+// =====================================================
+// DELETE PRODUCT
+// =====================================================
 
-// ==============================
+router.delete(
+    "/:id",
+    authMiddleware,
+    async (req, res) => {
+
+        try {
+
+            const result =
+                await pool.query(
+                    `
+                    DELETE FROM products
+                    WHERE id=$1
+                    RETURNING id
+                    `,
+                    [req.params.id]
+                );
+
+            if (result.rows.length === 0) {
+
+                return res.status(404).json({
+
+                    success: false,
+
+                    message:
+                        "Product not found"
+                });
+            }
+
+            res.json({
+
+                success: true,
+
+                message:
+                    "Product Deleted Successfully"
+            });
+
+        } catch (err) {
+
+            console.error(
+                "DELETE PRODUCT ERROR:",
+                err
+            );
+
+            res.status(500).json({
+
+                success: false,
+
+                message: err.message
+            });
+        }
+    }
+);
+
+// =====================================================
 // EXPORT
-// ==============================
+// =====================================================
 
 module.exports = router;
