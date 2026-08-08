@@ -3,7 +3,7 @@
 // PART 1
 // ==========================================
 
-const BASE_URL = 'https://cartfox-backend.onrender.com';
+const BASE_URL = 'https://cartfox.onrender.com';
 
 const API_URL = `${BASE_URL}/api/products`;
 
